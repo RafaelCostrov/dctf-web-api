@@ -91,6 +91,7 @@ def gerar_guia_dctfweb():
 
 @app.route('/recibo', methods=['POST'])
 def gerar_recibo_dctfweb():
+    print(request.form)
     senha = request.form.get('senha')
     SENHA_API = os.getenv('SENHA_API')
     if senha != SENHA_API:
