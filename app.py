@@ -5,7 +5,7 @@ import base64
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from autenticar import retornar_token
-from envio_drive import salvar_drive
+from envio_drive import salvar_drive, buscar_json
 
 app = Flask(__name__)
 
@@ -103,7 +103,7 @@ def gerar_recibo_dctfweb():
         return jsonify({"error": "Parâmetros inválidos"}), 400
     try:
         load_dotenv()
-        PASTA_DRIVE_DCTFWEB_DARF = os.getenv('PASTA_DRIVE_DCTFWEB_RECIBO')
+        PASTA_DRIVE_DCTFWEB_RECIBO = os.getenv('PASTA_DRIVE_DCTFWEB_RECIBO')
         ano, mes = competencia.split('-')
         access_token, jwt = retornar_token()
         url = 'https://gateway.apiserpro.serpro.gov.br/integra-contador/v1/Consultar'
@@ -150,7 +150,7 @@ def gerar_recibo_dctfweb():
         with open(nome_arquivo, 'wb') as pdf_file:
             pdf_file.write(pdf_bytes)
         arquivo_drive = salvar_drive(
-            '', nome_arquivo, nome_arquivo, PASTA_DRIVE_DCTFWEB_DARF)
+            '', nome_arquivo, nome_arquivo, PASTA_DRIVE_DCTFWEB_RECIBO)
         resultado = {
             "mensagem": "Recibo DCTFWeb gerado com sucesso.",
             "fileId": arquivo_drive
@@ -163,72 +163,69 @@ def gerar_recibo_dctfweb():
         return jsonify({"error": str(e)}), 500
 
 
-# def gerar_mit():
-    # senha = request.form.get('senha')
-#     SENHA_API = os.getenv('SENHA_API')
-#     if senha != SENHA_API:
-#     return jsonify({"error": "Senha inválida"}), 403
-#     cnpj = input("Digite o CNPJ (somente números): ")
+@app.route('/mit', methods=['POST'])
+def gerar_mit():
+    load_dotenv()
+    senha = request.form.get('senha')
+    SENHA_API = os.getenv('SENHA_API')
+    if senha != SENHA_API:
+        return jsonify({"error": "Senha inválida"}), 403
+    try:
+        access_token, jwt = retornar_token()
+        empresa = request.form.get('empresa')
+        cnpj = request.form.get('cnpj')
+        id = request.form.get('fileId')
+        dados = buscar_json(id)
+        if not empresa or not cnpj or not dados:
+            return jsonify({"error": "Parâmetros inválidos"}), 400
+        url = 'https://gateway.apiserpro.serpro.gov.br/integra-contador/v1/Declarar'
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+            'jwt_token': jwt,
+        }
 
-#     access_token, jwt = retornar_token()
+        data = {
+            "contratante": {
+                "numero": "15435766000176",
+                "tipo": 2
+            },
+            "autorPedidoDados": {
+                "numero": "15435766000176",
+                "tipo": 2
+            },
+            "contribuinte": {
+                "numero": f"{cnpj}",
+                "tipo": 2
+            },
+            "pedidoDados": {
+                "idSistema": "MIT",
+                "idServico": "ENCAPURACAO314",
+                "versaoSistema": "1.0",
+                "dados": dados
+            }
+        }
 
-#     url = 'https://gateway.apiserpro.serpro.gov.br/integra-contador/v1/Declarar'
+        requisicao = requests.post(
+            url,
+            headers=headers,
+            json=data,
+        )
 
-#     headers = {
-#         'Authorization': f'Bearer {access_token}',
-#         'Content-Type': 'application/json',
-#         'jwt_token': jwt,
-#     }
-
-#     with open("15435766-MIT-202506.JSON", "r", encoding="utf-8") as f:
-#         dados = f.read()
-#     print(dados)
-#     data = {
-#         "contratante": {
-#             "numero": "15435766000176",
-#             "tipo": 2
-#         },
-#         "autorPedidoDados": {
-#             "numero": "15435766000176",
-#             "tipo": 2
-#         },
-#         "contribuinte": {
-#             "numero": f"{cnpj}",
-#             "tipo": 2
-#         },
-#         "pedidoDados": {
-#             "idSistema": "MIT",
-#             "idServico": "ENCAPURACAO314",
-#             "versaoSistema": "1.0",
-#             "dados": dados
-#         }
-#     }
-
-#     requisicao = requests.post(
-#         url,
-#         headers=headers,
-#         json=data,
-#     )
-#     print(request.text)
-#     print(request.status_code)
-
-
-# if __name__ == "__main__":
-#     print("Escolha uma opção:")
-#     print("1. Gerar Guia DCTFWeb")
-#     print("2. Gerar Recibo DCTFWeb")
-#     print("3. Gerar MIT")
-
-#     opcao = input("Digite o número da opção: ")
-
-#     if opcao == '1':
-#         gerar_guia_dctfweb()
-#     elif opcao == '2':
-#         gerar_recibo_dctfweb()
-#     elif opcao == '3':
-#         gerar_mit()
-#     else:
-#         print("Opção inválida.")
+        resposta = requisicao.json()
+        status = resposta.get('status')
+        if status == 200:
+            resultado = {
+                "mensagem": "MIT gerado com sucesso.",
+                "arquivo": id
+            }
+            print(resposta)
+            return jsonify(resultado), 200
+        else:
+            print(f"Erro ao gerar MIT: {resposta}")
+            return jsonify({"error": "Erro ao gerar MIT"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
