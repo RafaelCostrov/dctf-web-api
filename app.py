@@ -59,13 +59,13 @@ def gerar_guia_dctfweb():
             }
         }
 
-        request = requests.post(
+        requisicao = requests.post(
             url,
             headers=headers,
             json=data,
         )
 
-        dados_json = request.json().get('dados', {})
+        dados_json = requisicao.json().get('dados', {})
         pdfBase64 = json.loads(dados_json).get('PDFByteArrayBase64')
         pdf_bytes = base64.b64decode(pdfBase64)
         nome_arquivo = f'DARF - {empresa} - {mes}-{ano}.pdf'
@@ -128,13 +128,13 @@ def gerar_recibo_dctfweb():
             }
         }
 
-        request = requests.post(
+        requisicao = requests.post(
             url,
             headers=headers,
             json=data,
         )
 
-        dados_json = request.json().get('dados', {})
+        dados_json = requisicao.json().get('dados', {})
         pdfBase64 = json.loads(dados_json).get('PDFByteArrayBase64')
         pdf_bytes = base64.b64decode(pdfBase64)
         nome_arquivo = f'Recibo - {empresa} - {mes}-{ano}.pdf'
@@ -192,7 +192,7 @@ def gerar_recibo_dctfweb():
 #         }
 #     }
 
-#     request = requests.post(
+#     requisicao = requests.post(
 #         url,
 #         headers=headers,
 #         json=data,
