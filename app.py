@@ -17,6 +17,10 @@ def index():
 
 @app.route('/darf', methods=['POST'])
 def gerar_guia_dctfweb():
+    senha = request.form.get('senha')
+    SENHA_API = os.getenv('SENHA_API')
+    if senha != SENHA_API:
+        return jsonify({"error": "Senha inválida"}), 403
     empresa = request.form.get('empresa')
     cnpj = request.form.get('cnpj')
     competencia = request.form.get('competencia')
@@ -87,6 +91,10 @@ def gerar_guia_dctfweb():
 
 @app.route('/recibo', methods=['POST'])
 def gerar_recibo_dctfweb():
+    senha = request.form.get('senha')
+    SENHA_API = os.getenv('SENHA_API')
+    if senha != SENHA_API:
+        return jsonify({"error": "Senha inválida"}), 403
     empresa = request.form.get('empresa')
     cnpj = request.form.get('cnpj')
     competencia = request.form.get('competencia')
@@ -155,7 +163,10 @@ def gerar_recibo_dctfweb():
 
 
 # def gerar_mit():
-
+    # senha = request.form.get('senha')
+#     SENHA_API = os.getenv('SENHA_API')
+#     if senha != SENHA_API:
+#     return jsonify({"error": "Senha inválida"}), 403
 #     cnpj = input("Digite o CNPJ (somente números): ")
 
 #     access_token, jwt = retornar_token()
