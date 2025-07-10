@@ -13,6 +13,6 @@ def acessando_drive():
     cred_dict = json.loads(info)
     SCOPES = os.getenv('SCOPES_DRIVE').split(',')
     creds = service_account.Credentials.from_service_account_info(
-        cred_dict, scopes=SCOPES)
+        cred_dict, scopes=SCOPES, subject="inov2@controller-oraculus.com.br")
     drive_service = build("drive", "v3", credentials=creds)
     return drive_service

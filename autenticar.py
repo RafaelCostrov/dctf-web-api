@@ -38,5 +38,8 @@ def retornar_token():
 
     acess_token = x.json().get('access_token')
     jwt = x.json().get('jwt_token')
-
+    if os.path.exists('cert.pem'):
+        os.remove('cert.pem')
+    if os.path.exists('key.pem'):
+        os.remove('key.pem')
     return acess_token, jwt
