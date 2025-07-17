@@ -10,8 +10,9 @@ def salvar_drive(funcao, caminho, nome, pasta_id=None):
     data_hora = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     drive = acessando_drive()
     time.sleep(1)
+    nome_formatado = nome.replace('.pdf', '')
     file_metadata = {
-        'name': f'{nome} - {data_hora}',
+        'name': f'{nome_formatado} - {data_hora}',
     }
 
     if pasta_id:
