@@ -10,6 +10,30 @@ from envio_drive import salvar_drive, buscar_json
 app = Flask(__name__)
 
 
+def gerar_data(cnpj, id_sistema, id_servico, dados):
+    json_data = {
+        "contratante": {
+            "numero": "15435766000176",
+            "tipo": 2
+        },
+        "autorPedidoDados": {
+            "numero": "15435766000176",
+            "tipo": 2
+        },
+        "contribuinte": {
+            "numero": f"{cnpj}",
+            "tipo": 2
+        },
+        "pedidoDados": {
+            "idSistema": id_sistema,
+            "idServico": id_servico,
+            "versaoSistema": "1.0",
+            "dados": dados
+        }
+    }
+    return json_data
+
+
 @app.route('/')
 def index():
     return "API para assistir na DCTFWeb - Rafael Costrov"
@@ -24,6 +48,7 @@ def gerar_guia_dctfweb():
     empresa = request.form.get('empresa')
     cnpj = request.form.get('cnpj')
     competencia = request.form.get('competencia')
+    codigo = request.form.get('codigo')
     if not empresa or not cnpj or not competencia:
         return jsonify({"error": "Parâmetros inválidos"}), 400
     try:
@@ -41,27 +66,7 @@ def gerar_guia_dctfweb():
         }
 
         dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}"}}'
-
-        data = {
-            "contratante": {
-                "numero": "15435766000176",
-                "tipo": 2
-            },
-            "autorPedidoDados": {
-                "numero": "15435766000176",
-                "tipo": 2
-            },
-            "contribuinte": {
-                "numero": f"{cnpj}",
-                "tipo": 2
-            },
-            "pedidoDados": {
-                "idSistema": "DCTFWEB",
-                "idServico": "GERARGUIA31",
-                "versaoSistema": "1.0",
-                "dados": dados
-            }
-        }
+        data = gerar_data(cnpj, "DCTFWEB", "GERARGUIA31", dados)
 
         requisicao = requests.post(
             url,
@@ -69,10 +74,11 @@ def gerar_guia_dctfweb():
             json=data,
         )
 
-        dados_json = requisicao.json().get('dados', {})
+        resposta = requisicao.json()
+        dados_json = resposta.get('dados', {})
         pdfBase64 = json.loads(dados_json).get('PDFByteArrayBase64')
         pdf_bytes = base64.b64decode(pdfBase64)
-        nome_arquivo = f'DARF - {empresa} - {mes}-{ano}.pdf'
+        nome_arquivo = f'DARF - {codigo} - {empresa} - {mes}-{ano}.pdf'
         with open(nome_arquivo, 'wb') as pdf_file:
             pdf_file.write(pdf_bytes)
         arquivo_drive = salvar_drive(
@@ -83,7 +89,11 @@ def gerar_guia_dctfweb():
         }
         if os.path.exists(nome_arquivo):
             os.remove(nome_arquivo)
-        return resultado, 200
+        status = resposta.get('status')
+        if status == 200:
+            return jsonify(resultado), 200
+        else:
+            return jsonify({"error": f"Erro ao gerar guia DCTFWeb - {resposta}"}), 500
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -91,12 +101,12 @@ def gerar_guia_dctfweb():
 
 @app.route('/recibo', methods=['POST'])
 def gerar_recibo_dctfweb():
-    print(request.form)
     senha = request.form.get('senha')
     SENHA_API = os.getenv('SENHA_API')
     if senha != SENHA_API:
         return jsonify({"error": "Senha inválida"}), 403
     empresa = request.form.get('empresa')
+    codigo = request.form.get('codigo')
     cnpj = request.form.get('cnpj')
     competencia = request.form.get('competencia')
     if not empresa or not cnpj or not competencia:
@@ -115,27 +125,7 @@ def gerar_recibo_dctfweb():
         }
 
         dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}"}}'
-
-        data = {
-            "contratante": {
-                "numero": "15435766000176",
-                "tipo": 2
-            },
-            "autorPedidoDados": {
-                "numero": "15435766000176",
-                "tipo": 2
-            },
-            "contribuinte": {
-                "numero": f"{cnpj}",
-                "tipo": 2
-            },
-            "pedidoDados": {
-                "idSistema": "DCTFWEB",
-                "idServico": "CONSRECIBO32",
-                "versaoSistema": "1.0",
-                "dados": dados
-            }
-        }
+        data = gerar_data(cnpj, "DCTFWEB", "CONSRECIBO32", dados)
 
         requisicao = requests.post(
             url,
@@ -143,10 +133,11 @@ def gerar_recibo_dctfweb():
             json=data,
         )
 
-        dados_json = requisicao.json().get('dados', {})
+        resposta = requisicao.json()
+        dados_json = resposta.get('dados', {})
         pdfBase64 = json.loads(dados_json).get('PDFByteArrayBase64')
         pdf_bytes = base64.b64decode(pdfBase64)
-        nome_arquivo = f'Recibo - {empresa} - {mes}-{ano}.pdf'
+        nome_arquivo = f'Recibo - {codigo} - {empresa} - {mes}-{ano}.pdf'
         with open(nome_arquivo, 'wb') as pdf_file:
             pdf_file.write(pdf_bytes)
         arquivo_drive = salvar_drive(
@@ -157,7 +148,11 @@ def gerar_recibo_dctfweb():
         }
         if os.path.exists(nome_arquivo):
             os.remove(nome_arquivo)
-        return resultado, 200
+        status = resposta.get('status')
+        if status == 200:
+            return jsonify(resultado), 200
+        else:
+            return jsonify({"error": f"Erro ao gerar o recibo DCTFWeb - {resposta}"}), 500
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -185,26 +180,7 @@ def gerar_mit():
             'jwt_token': jwt,
         }
 
-        data = {
-            "contratante": {
-                "numero": "15435766000176",
-                "tipo": 2
-            },
-            "autorPedidoDados": {
-                "numero": "15435766000176",
-                "tipo": 2
-            },
-            "contribuinte": {
-                "numero": f"{cnpj}",
-                "tipo": 2
-            },
-            "pedidoDados": {
-                "idSistema": "MIT",
-                "idServico": "ENCAPURACAO314",
-                "versaoSistema": "1.0",
-                "dados": dados
-            }
-        }
+        data = gerar_data(cnpj, "MIT", "ENCAPURACAO314", dados)
 
         requisicao = requests.post(
             url,
@@ -219,11 +195,9 @@ def gerar_mit():
                 "mensagem": "MIT gerado com sucesso.",
                 "arquivo": id
             }
-            print(resposta)
             return jsonify(resultado), 200
         else:
-            print(f"Erro ao gerar MIT: {resposta}")
-            return jsonify({"error": "Erro ao gerar MIT"}), 500
+            return jsonify({"error": f"Erro ao gerar MIT - {resposta}"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
