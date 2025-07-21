@@ -34,6 +34,22 @@ def gerar_data(cnpj, id_sistema, id_servico, dados):
     return json_data
 
 
+def verificar_json(json):
+    codigo_sem_procuracao = "[AcessoNegado-ICGERENCIADOR-022]"
+    sem_procuracao = any(mensagem.get("codigo") ==
+                         codigo_sem_procuracao for mensagem in json.get("mensagens", []))
+    if sem_procuracao:
+        return jsonify({"error": "Sem procuração para a Oraculu's."}), 403
+
+    codigo_declaracao_inexistente = "[Aviso-DCTFWEB-MG08]"
+    nao_encontrada = any(mensagem.get("codigo") ==
+                         codigo_declaracao_inexistente for mensagem in json.get("mensagens", []))
+    if nao_encontrada:
+        return jsonify({"error": "Declaração não encontrada."}), 404
+
+    return None
+
+
 @app.route('/')
 def index():
     return "API para assistir na DCTFWeb - Rafael Costrov"
@@ -75,6 +91,9 @@ def gerar_guia_dctfweb():
         )
 
         resposta = requisicao.json()
+        verificador = verificar_json(resposta)
+        if verificador:
+            return verificador
         dados_json = resposta.get('dados', {})
         pdfBase64 = json.loads(dados_json).get('PDFByteArrayBase64')
         pdf_bytes = base64.b64decode(pdfBase64)
@@ -134,6 +153,9 @@ def gerar_recibo_dctfweb():
         )
 
         resposta = requisicao.json()
+        verificador = verificar_json(resposta)
+        if verificador:
+            return verificador
         dados_json = resposta.get('dados', {})
         pdfBase64 = json.loads(dados_json).get('PDFByteArrayBase64')
         pdf_bytes = base64.b64decode(pdfBase64)
@@ -189,6 +211,11 @@ def gerar_mit():
         )
 
         resposta = requisicao.json()
+        print(resposta)
+        verificador = verificar_json(resposta)
+        if verificador:
+            return verificador
+
         status = resposta.get('status')
         if status == 200:
             resultado = {
