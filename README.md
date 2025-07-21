@@ -45,6 +45,7 @@ As requisições devem ser feitas para:
 | Parâmetro   |Descrição                                   |
 | :--------- | :------------------------------------------ |
 | `senha`      | A senha para conseguir utilizar a API. |
+| `codigo`      | O codigo da empresa para qual está sendo feita a requisição. |
 | `empresa`      | A empresa para qual está sendo feita a requisição. |
 | `cnpj`      | O CNPJ para qual está sendo feita a requisição. |
 | `competencia`      | Competência da declaração no formato `yyyy-MM`. |
@@ -69,6 +70,7 @@ As requisições devem ser feitas para:
 | Parâmetro   |Descrição                                   |
 | :--------- | :------------------------------------------ |
 | `senha`      | A senha para conseguir utilizar a API. |
+| `codigo`      | O codigo da empresa para qual está sendo feita a requisição. |
 | `empresa`      | A empresa para qual está sendo feita a requisição. |
 | `cnpj`      | O CNPJ para qual está sendo feita a requisição. |
 | `competencia`      | Competência da declaração no formato `yyyy-MM`. |
