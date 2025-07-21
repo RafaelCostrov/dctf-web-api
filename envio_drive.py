@@ -31,7 +31,7 @@ def salvar_drive(funcao, caminho, nome, pasta_id=None):
 def buscar_json(id):
     drive = acessando_drive()
     time.sleep(1)
-    file = drive.files().get(fileId=id, fields='id, name, mimeType').execute()
+    file = drive.files().get(fileId=id, fields='id,name,mimeType').execute()
     if not file['mimeType'] == 'application/json':
         raise ValueError("O arquivo não é do tipo JSON.")
     request = drive.files().get_media(fileId=id)
