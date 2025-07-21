@@ -101,7 +101,7 @@ def gerar_guia_dctfweb():
         with open(nome_arquivo, 'wb') as pdf_file:
             pdf_file.write(pdf_bytes)
         arquivo_drive = salvar_drive(
-            '', nome_arquivo, nome_arquivo, PASTA_DRIVE_DCTFWEB_DARF)
+            mes, ano, nome_arquivo, nome_arquivo, PASTA_DRIVE_DCTFWEB_DARF)
         resultado = {
             "mensagem": "Guia DCTFWeb gerada com sucesso.",
             "fileId": arquivo_drive
@@ -163,7 +163,7 @@ def gerar_recibo_dctfweb():
         with open(nome_arquivo, 'wb') as pdf_file:
             pdf_file.write(pdf_bytes)
         arquivo_drive = salvar_drive(
-            '', nome_arquivo, nome_arquivo, PASTA_DRIVE_DCTFWEB_RECIBO)
+            mes, ano, nome_arquivo, nome_arquivo, PASTA_DRIVE_DCTFWEB_RECIBO)
         resultado = {
             "mensagem": "Recibo DCTFWeb gerado com sucesso.",
             "fileId": arquivo_drive
