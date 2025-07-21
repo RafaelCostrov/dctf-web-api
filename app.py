@@ -47,6 +47,12 @@ def verificar_json(json):
     if nao_encontrada:
         return jsonify({"error": "Declaração não encontrada."}), 404
 
+    codigo_em_andamento = "[EntradaIncorreta-DCTFWEB-MG10]"
+    em_andamento = any(mensagem.get("codigo") ==
+                       codigo_em_andamento for mensagem in json.get("mensagens", []))
+    if em_andamento:
+        return jsonify({"error": "Declaração em andamento."}), 404
+
     return None
 
 
