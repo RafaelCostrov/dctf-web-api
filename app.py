@@ -53,6 +53,12 @@ def verificar_json(json):
     if em_andamento:
         return jsonify({"error": "Declaração em andamento."}), 404
 
+    codigo_mit_em_andamento = "[Aviso-MIT-MSG_0036]"
+    mit_em_andamento = any(mensagem.get("codigo") ==
+                           codigo_mit_em_andamento for mensagem in json.get("mensagens", []))
+    if mit_em_andamento:
+        return jsonify({"error": "Existe uma apuração MIT em andamento."}), 404
+
     return None
 
 
