@@ -64,7 +64,7 @@ def verificar_json(json):
 
 @app.route('/')
 def index():
-    return "API para assistir na DCTFWeb - Rafael Costrov"
+    return jsonify({"mensagem": "API para assistir na DCTFWeb - Rafael Costrov"})
 
 
 @app.route('/darf', methods=['POST'])
