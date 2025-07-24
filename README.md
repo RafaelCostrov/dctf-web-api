@@ -33,8 +33,12 @@ As requisições devem ser feitas para:
 ```http
   GET /
 ```
-**Exemplo de resposta esperada:**\
-"API para assistir na DCTFWeb - Rafael Costrov"
+**Exemplo de resposta esperada:**
+```json
+{
+  "mensagem": "API para assistir na DCTFWeb - Rafael Costrov",
+}
+```
 
 
 #### Geração do DARF 
