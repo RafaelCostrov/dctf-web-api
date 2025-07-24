@@ -74,44 +74,44 @@ def gerar_arquivo(empresa, cnpj, competencia, pasta, url, data, nome_arquivo, me
     if not empresa or not cnpj or not competencia:
         return jsonify({"error": "Dados incompletos"}), 400
 
-    # try:
-    ano, mes = competencia.split('-')
-    access_token, jwt = retornar_token()
+    try:
+        ano, mes = competencia.split('-')
+        access_token, jwt = retornar_token()
 
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-        'Content-Type': 'application/json',
-        'jwt_token': jwt,
-    }
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+            'jwt_token': jwt,
+        }
 
-    requisicao = requests.post(
-        url,
-        headers=headers,
-        json=data,
-    )
+        requisicao = requests.post(
+            url,
+            headers=headers,
+            json=data,
+        )
 
-    resposta = requisicao.json()
-    verificador = verificar_json(resposta)
+        resposta = requisicao.json()
+        verificador = verificar_json(resposta)
 
-    if verificador:
-        return verificador
+        if verificador:
+            return verificador
 
-    dados_json = resposta.get('dados', {})
-    pdfBase64 = json.loads(dados_json).get('PDFByteArrayBase64')
-    pdf_bytes = base64.b64decode(pdfBase64)
+        dados_json = resposta.get('dados', {})
+        pdfBase64 = json.loads(dados_json).get('PDFByteArrayBase64')
+        pdf_bytes = base64.b64decode(pdfBase64)
 
-    resultado = gerar_salvar_arquivo(
-        nome_arquivo, pdf_bytes, mes, ano, pasta, mensagem
-    )
+        resultado = gerar_salvar_arquivo(
+            nome_arquivo, pdf_bytes, mes, ano, pasta, mensagem
+        )
 
-    if os.path.exists(nome_arquivo):
-        os.remove(nome_arquivo)
+        if os.path.exists(nome_arquivo):
+            os.remove(nome_arquivo)
 
-    status = resposta.get('status')
-    if status == 200:
-        return jsonify(resultado), 200
-    else:
-        return jsonify({"error": f"Erro ao gerar arquivo - {resposta}"}), 500
+        status = resposta.get('status')
+        if status == 200:
+            return jsonify(resultado), 200
+        else:
+            return jsonify({"error": f"Erro ao gerar arquivo - {resposta}"}), 500
 
-    # except Exception as e:
-    #     return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
