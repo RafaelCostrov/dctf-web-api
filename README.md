@@ -66,6 +66,31 @@ As requisições devem ser feitas para:
  `mensagem`: Confirmação da geração da Guia.\
  `fileId.id`: ID do PDF da Guia no Google Drive.
 
+#### Geração do DARF em Andamento
+```http
+  POST /darf-andamento
+```
+
+| Parâmetro   |Descrição                                   |
+| :--------- | :------------------------------------------ |
+| `senha`      | A senha para conseguir utilizar a API. |
+| `codigo`      | O codigo da empresa para qual está sendo feita a requisição. |
+| `empresa`      | A empresa para qual está sendo feita a requisição. |
+| `cnpj`      | O CNPJ para qual está sendo feita a requisição. |
+| `competencia`      | Competência da declaração no formato `yyyy-MM`. |
+
+**Exemplo de resposta esperada:**
+```json
+{
+  "mensagem": "Guia DCTFWeb em andamento gerada com sucesso.",
+  "fileId": {
+    "id": "1a2b3c4d5e6f7g8h9i"
+  }
+}
+```
+ `mensagem`: Confirmação da geração da Guia.\
+ `fileId.id`: ID do PDF da Guia no Google Drive.
+
  #### Geração do Recibo 
 ```http
   POST /recibo
