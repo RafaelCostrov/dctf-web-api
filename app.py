@@ -1,6 +1,6 @@
 import requests
 import os
-from auxiliar import gerar_arquivo, gerar_data
+from auxiliar import gerar_arquivo, gerar_data, verificar_json
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from autenticar import retornar_token
