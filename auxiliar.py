@@ -55,6 +55,13 @@ def verificar_json(json):
     if nao_encontrada:
         return jsonify({"error": "Declaração não encontrada."}), 404
 
+    texto_sem_em_andamento = "Utilize o serviço GERARGUIA31"
+    sem_em_andamento = any(texto_sem_em_andamento in mensagem.get(
+        "texto") for mensagem in json.get("mensagens", []))
+
+    if sem_em_andamento:
+        return jsonify({"error": "Sem declaração em andamento. Utilize a opção 'DARF'."}), 404
+
     codigo_em_andamento = "[EntradaIncorreta-DCTFWEB-MG10]"
     em_andamento = any(mensagem.get("codigo") ==
                        codigo_em_andamento for mensagem in json.get("mensagens", []))
@@ -89,7 +96,6 @@ def gerar_arquivo(empresa, cnpj, competencia, pasta, url, data, nome_arquivo, me
             headers=headers,
             json=data,
         )
-
         resposta = requisicao.json()
         verificador = verificar_json(resposta)
 
