@@ -47,6 +47,40 @@ def gerar_guia_dctfweb():
     return resultado_final
 
 
+@app.route('/darf-andamento', methods=['POST'])
+def gerar_guia_dctfweb_andamento():
+    load_dotenv()
+    # Pegando parametros
+    senha = request.form.get('senha')
+    SENHA_API = os.getenv('SENHA_API')
+    if senha != SENHA_API:
+        return jsonify({"error": "Senha inválida"}), 403
+    empresa = request.form.get('empresa')
+    cnpj = request.form.get('cnpj')
+    competencia = request.form.get('competencia')
+    codigo = request.form.get('codigo')
+    if not empresa or not cnpj or not competencia:
+        return jsonify({"error": "Parâmetros inválidos"}), 400
+    mensagem = "Guia DCTFWeb em andamento gerada com sucesso."
+
+    # Gerando dados para a requisição
+    ano, mes = competencia.split('-')
+    dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}"}}'
+    data = gerar_data(cnpj, "DCTFWEB", "GERARGUIAANDAMENTO313", dados)
+    nome_arquivo = f'DARF andamento - {codigo} - {empresa} - {mes}-{ano}.pdf'
+    url = 'https://gateway.apiserpro.serpro.gov.br/integra-contador/v1/Emitir'
+
+    # Pegando pasta do drive para DARF em andamento
+    PASTA_DRIVE_DCTFWEB_DARF_ANDAMENTO = os.getenv(
+        'PASTA_DRIVE_DCTFWEB_DARF_ANDAMENTO')
+
+    # Chamando função auxiliar
+    resultado_final = gerar_arquivo(
+        empresa, cnpj, competencia, PASTA_DRIVE_DCTFWEB_DARF_ANDAMENTO, url, data, nome_arquivo, mensagem
+    )
+    return resultado_final
+
+
 @app.route('/recibo', methods=['POST'])
 def gerar_recibo_dctfweb():
     # Pegando parametros
