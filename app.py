@@ -19,7 +19,6 @@ def gerar_guia_dctfweb():
     load_dotenv()
     # Pegando parametros
     data = request.get_json()
-    print(data)
     senha = data.get('senha')
     SENHA_API = os.getenv('SENHA_API')
     if senha != SENHA_API:
@@ -54,15 +53,16 @@ def gerar_guia_dctfweb():
 def gerar_guia_dctfweb_andamento():
     load_dotenv()
     # Pegando parametros
-    senha = request.form.get('senha')
+    data = request.get_json()
+    senha = data.get('senha')
     SENHA_API = os.getenv('SENHA_API')
     if senha != SENHA_API:
         return jsonify({"error": "Senha inválida"}), 403
-    empresa = request.form.get('empresa')
-    cnpj = request.form.get('cnpj')
-    competencia = request.form.get('competencia')
-    codigo = request.form.get('codigo')
-    listaSistemas = request.form.get('listaSistemas')
+    empresa = data.get('empresa')
+    cnpj = data.get('cnpj')
+    competencia = data.get('competencia')
+    codigo = data.get('codigo')
+    listaSistemas = data.get('listaSistemas')
     if not empresa or not cnpj or not competencia:
         return jsonify({"error": "Parâmetros inválidos"}), 400
     mensagem = "Guia DCTFWeb em andamento gerada com sucesso."
@@ -88,14 +88,15 @@ def gerar_guia_dctfweb_andamento():
 @app.route('/recibo', methods=['POST'])
 def gerar_recibo_dctfweb():
     # Pegando parametros
-    senha = request.form.get('senha')
+    data = request.get_json()
+    senha = data.get('senha')
     SENHA_API = os.getenv('SENHA_API')
     if senha != SENHA_API:
         return jsonify({"error": "Senha inválida"}), 403
-    empresa = request.form.get('empresa')
-    cnpj = request.form.get('cnpj')
-    competencia = request.form.get('competencia')
-    codigo = request.form.get('codigo')
+    empresa = data.get('empresa')
+    cnpj = data.get('cnpj')
+    competencia = data.get('competencia')
+    codigo = data.get('codigo')
     if not empresa or not cnpj or not competencia:
         return jsonify({"error": "Parâmetros inválidos"}), 400
     mensagem = "Recibo DCTFWeb gerado com sucesso."
@@ -120,15 +121,16 @@ def gerar_recibo_dctfweb():
 @app.route('/mit', methods=['POST'])
 def gerar_mit():
     load_dotenv()
-    senha = request.form.get('senha')
+    data = request.get_json()
+    senha = data.get('senha')
     SENHA_API = os.getenv('SENHA_API')
     if senha != SENHA_API:
         return jsonify({"error": "Senha inválida"}), 403
     try:
         access_token, jwt = retornar_token()
-        empresa = request.form.get('empresa')
-        cnpj = request.form.get('cnpj')
-        id = request.form.get('fileId')
+        empresa = data.get('empresa')
+        cnpj = data.get('cnpj')
+        id = data.get('fileId')
         dados = buscar_json(id)
         if not empresa or not cnpj or not dados:
             return jsonify({"error": "Parâmetros inválidos"}), 400
