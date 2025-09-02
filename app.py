@@ -18,6 +18,7 @@ def index():
 def gerar_guia_dctfweb():
     load_dotenv()
     # Pegando parametros
+    print(request.form)
     senha = request.form.get('senha')
     SENHA_API = os.getenv('SENHA_API')
     if senha != SENHA_API:
