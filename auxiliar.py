@@ -104,7 +104,6 @@ def gerar_arquivo(empresa, cnpj, competencia, pasta, url, data, nome_arquivo, me
             json=data,
         )
         resposta = requisicao.json()
-        print(resposta)
         verificador = verificar_json(resposta)
 
         if verificador:
