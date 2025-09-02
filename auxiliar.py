@@ -62,6 +62,13 @@ def verificar_json(json):
     if sem_em_andamento:
         return jsonify({"error": "Sem declaração em andamento. Utilize a opção 'DARF'."}), 404
 
+    texto_sem_debito = "Não há débitos com saldo a pagar para emissão da guia de pagamento."
+    sem_debito = any(texto_sem_debito in mensagem.get(
+        "texto") for mensagem in json.get("mensagens", []))
+
+    if sem_debito:
+        return jsonify({"error": "Não há débitos para a opção selecionada."}), 404
+
     codigo_em_andamento = "[EntradaIncorreta-DCTFWEB-MG10]"
     em_andamento = any(mensagem.get("codigo") ==
                        codigo_em_andamento for mensagem in json.get("mensagens", []))
@@ -72,7 +79,7 @@ def verificar_json(json):
     mit_em_andamento = any(mensagem.get("codigo") ==
                            codigo_mit_em_andamento for mensagem in json.get("mensagens", []))
     if mit_em_andamento:
-        return jsonify({"error": "Existe uma apuração MIT em andamento."}), 404
+        return jsonify({"error": "Existe uma apuração MIT em andamento."}), 400
 
     return None
 
@@ -97,6 +104,7 @@ def gerar_arquivo(empresa, cnpj, competencia, pasta, url, data, nome_arquivo, me
             json=data,
         )
         resposta = requisicao.json()
+        print(resposta)
         verificador = verificar_json(resposta)
 
         if verificador:
