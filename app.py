@@ -18,16 +18,17 @@ def index():
 def gerar_guia_dctfweb():
     load_dotenv()
     # Pegando parametros
-    print(request.form)
-    senha = request.form.get('senha')
+    data = request.get_json()
+    print(data)
+    senha = data.get('senha')
     SENHA_API = os.getenv('SENHA_API')
     if senha != SENHA_API:
         return jsonify({"error": "Senha inválida"}), 403
-    empresa = request.form.get('empresa')
-    cnpj = request.form.get('cnpj')
-    competencia = request.form.get('competencia')
-    codigo = request.form.get('codigo')
-    listaSistemas = request.form.get('listaSistemas')
+    empresa = data.get('empresa')
+    cnpj = data.get('cnpj')
+    competencia = data.get('competencia')
+    codigo = data.get('codigo')
+    listaSistemas = data.get('listaSistemas')
     if not empresa or not cnpj or not competencia:
         return jsonify({"error": "Parâmetros inválidos"}), 400
     mensagem = "Guia DCTFWeb gerada com sucesso."
