@@ -26,13 +26,14 @@ def gerar_guia_dctfweb():
     cnpj = request.form.get('cnpj')
     competencia = request.form.get('competencia')
     codigo = request.form.get('codigo')
+    listaSistemas = request.form.get('listaSistemas')
     if not empresa or not cnpj or not competencia:
         return jsonify({"error": "Parâmetros inválidos"}), 400
     mensagem = "Guia DCTFWeb gerada com sucesso."
 
     # Gerando dados para a requisição
     ano, mes = competencia.split('-')
-    dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}"}}'
+    dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}", "idsSistemaOrigem": {listaSistemas}}}'
     data = gerar_data(cnpj, "DCTFWEB", "GERARGUIA31", dados)
     nome_arquivo = f'DARF - {codigo} - {empresa} - {mes}-{ano}.pdf'
     url = 'https://gateway.apiserpro.serpro.gov.br/integra-contador/v1/Emitir'
@@ -59,13 +60,14 @@ def gerar_guia_dctfweb_andamento():
     cnpj = request.form.get('cnpj')
     competencia = request.form.get('competencia')
     codigo = request.form.get('codigo')
+    listaSistemas = request.form.get('listaSistemas')
     if not empresa or not cnpj or not competencia:
         return jsonify({"error": "Parâmetros inválidos"}), 400
     mensagem = "Guia DCTFWeb em andamento gerada com sucesso."
 
     # Gerando dados para a requisição
     ano, mes = competencia.split('-')
-    dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}"}}'
+    dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}, "idsSistemaOrigem": {listaSistemas}"}}'
     data = gerar_data(cnpj, "DCTFWEB", "GERARGUIAANDAMENTO313", dados)
     nome_arquivo = f'DARF andamento - {codigo} - {empresa} - {mes}-{ano}.pdf'
     url = 'https://gateway.apiserpro.serpro.gov.br/integra-contador/v1/Emitir'
