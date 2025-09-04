@@ -27,24 +27,27 @@ def gerar_guia_dctfweb():
     cnpj = data.get('cnpj')
     competencia = data.get('competencia')
     codigo = data.get('codigo')
-    listaSistemas = data.get('listaSistemas')
+    lista_sistemas = data.get('listaSistemas')
     if not empresa or not cnpj or not competencia:
         return jsonify({"error": "Parâmetros inválidos"}), 400
     mensagem = "Guia DCTFWeb gerada com sucesso."
 
     # Gerando dados para a requisição
     ano, mes = competencia.split('-')
-    dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}", "idsSistemaOrigem": {listaSistemas}}}'
+    dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}", "idsSistemaOrigem": {lista_sistemas}}}'
     data = gerar_data(cnpj, "DCTFWEB", "GERARGUIA31", dados)
     nome_arquivo = f'DARF - {codigo} - {empresa} - {mes}-{ano}.pdf'
     url = 'https://gateway.apiserpro.serpro.gov.br/integra-contador/v1/Emitir'
 
     # Pegando pasta do drive para DARF
-    PASTA_DRIVE_DCTFWEB_DARF = os.getenv('PASTA_DRIVE_DCTFWEB_DARF')
+
+    PASTA_DRIVE_DARF_MIT = os.getenv('PASTA_DRIVE_DARF_MIT')
+    PASTA_DRIVE_DARF_REINF = os.getenv('PASTA_DRIVE_DARF_REINF')
+    pasta_id = PASTA_DRIVE_DARF_MIT if 8 in lista_sistemas else PASTA_DRIVE_DARF_REINF
 
     # Chamando função auxiliar
     resultado_final = gerar_arquivo(
-        empresa, cnpj, competencia, PASTA_DRIVE_DCTFWEB_DARF, url, data, nome_arquivo, mensagem
+        empresa, cnpj, competencia, pasta_id, url, data, nome_arquivo, mensagem
     )
     return resultado_final
 
@@ -62,25 +65,29 @@ def gerar_guia_dctfweb_andamento():
     cnpj = data.get('cnpj')
     competencia = data.get('competencia')
     codigo = data.get('codigo')
-    listaSistemas = data.get('listaSistemas')
+    lista_sistemas = data.get('listaSistemas')
     if not empresa or not cnpj or not competencia:
         return jsonify({"error": "Parâmetros inválidos"}), 400
     mensagem = "Guia DCTFWeb em andamento gerada com sucesso."
 
     # Gerando dados para a requisição
     ano, mes = competencia.split('-')
-    dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}, "idsSistemaOrigem": {listaSistemas}"}}'
+    dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}, "idsSistemaOrigem": {lista_sistemas}"}}'
     data = gerar_data(cnpj, "DCTFWEB", "GERARGUIAANDAMENTO313", dados)
     nome_arquivo = f'DARF andamento - {codigo} - {empresa} - {mes}-{ano}.pdf'
     url = 'https://gateway.apiserpro.serpro.gov.br/integra-contador/v1/Emitir'
 
     # Pegando pasta do drive para DARF em andamento
-    PASTA_DRIVE_DCTFWEB_DARF_ANDAMENTO = os.getenv(
-        'PASTA_DRIVE_DCTFWEB_DARF_ANDAMENTO')
+
+    PASTA_DRIVE_DARF_ANDAMENTO_MIT = os.getenv(
+        'PASTA_DRIVE_DARF_ANDAMENTO_MIT')
+    PASTA_DRIVE_DARF_ANDAMENTO_REINF = os.getenv(
+        'PASTA_DRIVE_DARF_ANDAMENTO_REINF')
+    pasta_id = PASTA_DRIVE_DARF_ANDAMENTO_MIT if 8 in lista_sistemas else PASTA_DRIVE_DARF_ANDAMENTO_REINF
 
     # Chamando função auxiliar
     resultado_final = gerar_arquivo(
-        empresa, cnpj, competencia, PASTA_DRIVE_DCTFWEB_DARF_ANDAMENTO, url, data, nome_arquivo, mensagem
+        empresa, cnpj, competencia, pasta_id, url, data, nome_arquivo, mensagem
     )
     return resultado_final
 
