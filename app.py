@@ -4,7 +4,6 @@ from auxiliar import gerar_arquivo, gerar_data, verificar_json
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from autenticar import retornar_token
-from envio_drive import buscar_json
 
 app = Flask(__name__)
 
@@ -137,8 +136,7 @@ def gerar_mit():
         access_token, jwt = retornar_token()
         empresa = data.get('empresa')
         cnpj = data.get('cnpj')
-        id = data.get('fileId')
-        dados = buscar_json(id)
+        dados = data.get('dados')
         if not empresa or not cnpj or not dados:
             return jsonify({"error": "Parâmetros inválidos"}), 400
         url = 'https://gateway.apiserpro.serpro.gov.br/integra-contador/v1/Declarar'
