@@ -147,7 +147,8 @@ def gerar_mit():
         }
 
         data = gerar_data(cnpj, "MIT", "ENCAPURACAO314", dados)
-
+        print(dados)
+        print(data)
         requisicao = requests.post(
             url,
             headers=headers,
