@@ -164,8 +164,7 @@ def gerar_mit():
         status = resposta.get('status')
         if status == 200:
             resultado = {
-                "mensagem": "MIT gerado com sucesso.",
-                "arquivo": id
+                "mensagem": "MIT gerado com sucesso."
             }
             return jsonify(resultado), 200
         else:
