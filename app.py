@@ -71,7 +71,7 @@ def gerar_guia_dctfweb_andamento():
 
     # Gerando dados para a requisição
     ano, mes = competencia.split('-')
-    dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}, "idsSistemaOrigem": {lista_sistemas}"}}'
+    dados = f'{{"categoria": "GERAL_MENSAL", "anoPA": "{ano}", "mesPA": "{mes}", "idsSistemaOrigem": {lista_sistemas}}}'
     data = gerar_data(cnpj, "DCTFWEB", "GERARGUIAANDAMENTO313", dados)
     nome_arquivo = f'DARF andamento - {codigo} - {empresa} - {mes}-{ano}.pdf'
     url = 'https://gateway.apiserpro.serpro.gov.br/integra-contador/v1/Emitir'

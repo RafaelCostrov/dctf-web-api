@@ -97,7 +97,6 @@ def gerar_arquivo(empresa, cnpj, competencia, pasta, url, data, nome_arquivo, me
             'Content-Type': 'application/json',
             'jwt_token': jwt,
         }
-        print(data)
         requisicao = requests.post(
             url,
             headers=headers,
